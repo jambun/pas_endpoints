@@ -19,14 +19,15 @@ class ArchivesSpaceService < Sinatra::Base
 
   Endpoint.get('/stub/:model')
     .description("Get a stub record for a JSONModel")
-    .params(["model", String, "JSONModel to stub"])
+    .params(["model", String, "JSONModel to stub"],
+            ["expand", [String], "Properties to expand even if not required", :optional => true])
     .permissions([])
     .returns([200, "JSONModel(model)"],
              [404, "Model not found"]) \
   do
     model = params[:model]
     if models.has_key? model
-      json_response( JSONModel(model.to_sym).stub )
+      json_response( JSONModel(model.to_sym).stub(:expand => params.fetch(:expand) { [] }) )
     else
       raise NotFoundException.new
     end

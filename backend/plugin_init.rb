@@ -1,14 +1,15 @@
 class JSONModelType
 
-  def self.stub
+  def self.stub(opts = {})
+    expand = opts.fetch(:expand) { [] }
     stub = {}
     props = schema['properties']
     props.each_pair do |k,v|
-      if k != 'jsonmodel_type' && v['ifmissing'] == 'error'
+      if k != 'jsonmodel_type' && (v['ifmissing'] == 'error' || expand.include?(k))
         if v['type'] == 'array'
-          stub[k] = [ type_of("#{k}/items").stub ]
+          stub[k] = [ type_of("#{k}/items").stub(:expand => expand) ]
         elsif v['type'] == 'object'
-          stub[k] = type_of("#{k}/properties/ref").stub
+          stub[k] = type_of("#{k}/properties/ref").stub(:expand => expand)
         else
           typ = type_of(k)
           if typ.to_s.start_with?('JSONModel')
