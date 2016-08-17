@@ -11,15 +11,15 @@ class JSONModelType
         elsif v['type'] == 'object'
           stub[k] = type_of("#{k}/properties/ref").stub(:expand => expand)
         else
-          typ = type_of(k)
+          typ = v['type']
           if typ.to_s.start_with?('JSONModel')
-            stub[k] = typ.schema['uri'] + '/[ID]'
+            stub[k] = type_of(k).schema['uri'] + '/[ID]'
           else
             if v.has_key?('dynamic_enum')
               values = Enumeration.filter(:name => v['dynamic_enum']).first.enumeration_value.map {|v| v[:value]}.join('|')
               stub[k] = '(' + values + ')'
             else
-              stub[k] = '(' + type_of(k).to_s + ')'
+              stub[k] = '(' + typ.to_s + ')'
             end
           end
         end
