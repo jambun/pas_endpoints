@@ -8,6 +8,8 @@ class JSONModelType
       if k != 'jsonmodel_type' && (v['ifmissing'] == 'error' || expand.include?(k))
         if v['type'] == 'array'
           stub[k] = [ type_of("#{k}/items").stub(:expand => expand) ]
+        elsif v['type'].end_with?(') object')
+          stub[k] = type_of(k).stub(:expand => expand)
         elsif v['type'] == 'object'
           stub[k] = type_of("#{k}/properties/ref").stub(:expand => expand)
         else
