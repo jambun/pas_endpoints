@@ -9,7 +9,7 @@ class ArchivesSpaceService < Sinatra::Base
   do
     if params.has_key?(:uri)
       json_response(ArchivesSpaceService::Endpoint.all.select { |e|
-                      e[:uri] == params[:uri] && (params.has_key?(:method) ? e[:method] == params[:method].intern : true)
+                      e[:uri] == params[:uri] && (params.has_key?(:method) ? e[:method].include?(params[:method].intern) : true)
                     })
     else
       json_response(ArchivesSpaceService::Endpoint.all.sort{|a,b| a[:uri] <=> b[:uri]}.map{ |e| e[:uri] })
