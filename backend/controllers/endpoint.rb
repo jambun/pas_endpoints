@@ -33,4 +33,22 @@ class ArchivesSpaceService < Sinatra::Base
     end
   end
 
+
+  Endpoint.get('/users/byusername/:username')
+    .description("Get a user by username")
+    .params(["username", String, "Username to get user for"])
+    .permissions([:manage_users])
+    .returns([200, "JSONModel(:user)"],
+             [404, "User not found"]) \
+  do
+    user = User.find(:username => params[:username])
+
+    raise NotFoundException.new if user.nil?
+
+    json = User.to_jsonmodel(user)
+    json.permissions = user.permissions
+
+    json_response(json)
+  end
+
 end
