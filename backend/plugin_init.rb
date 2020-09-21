@@ -1,7 +1,6 @@
 class JSONModelType
 
   STUB_SKIP_FIELDS = [
-                      'jsonmodel_type',
                       'lock_version',
                      ]
 
@@ -34,7 +33,10 @@ class JSONModelType
       if !STUB_SKIP_FIELDS.include?(k) &&
           !(v.has_key?('readonly') && v['readonly']) &&
           (v['ifmissing'] == 'error' || expand.include?('ALL') || expand.include?(k))
-        if v['type'] == 'array'
+
+        if k == 'jsonmodel_type'
+          stub[k] = self.record_type
+        elsif v['type'] == 'array'
           if v['items']['subtype'] == 'ref'
             stub[k] = Array(v['items']['properties']['ref']['type']).map{|t|
               ref = JSONModel.parse_jsonmodel_ref(t.is_a?(Hash) ? t['type'] : t)
