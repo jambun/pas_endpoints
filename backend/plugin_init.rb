@@ -63,6 +63,8 @@ class JSONModelType
             if v.has_key?('dynamic_enum')
               values = Enumeration.filter(:name => v['dynamic_enum']).first.enumeration_value.map {|v| v[:value]}.join('|')
               stub[k] = '(' + values + ')'
+            elsif self.record_type == 'date' && (k == 'begin' || k == 'end')
+              stub[k] = '(date)'
             else
               stub[k] = '(' + typ.to_s + ')'
             end
