@@ -28,20 +28,23 @@ class JSONModelType
   def self.stub(opts = {})
     expand = opts.fetch(:expand, [])
     stub = {}
-    props = schema['properties']
+    passed_props = opts.delete(:properties)
+    props = passed_props || schema['properties']
     props.each_pair do |k,v|
       if !STUB_SKIP_FIELDS.include?(k) &&
           !(v.has_key?('readonly') && v['readonly']) &&
           (v['ifmissing'] == 'error' || expand.include?('ALL') || expand.include?(k))
 
+        v['type'] = v['type'].first['type'] if v['type'].is_a?(Array)
+
         if k == 'jsonmodel_type'
           stub[k] = self.record_type
+        elsif k == 'ref'
+          t = v['type']
+          stub[k] = complete_uri(JSONModel.JSONModel(JSONModel.parse_jsonmodel_ref(t.is_a?(Hash) ? t['type'] : t).first).schema['uri'], opts)
         elsif v['type'] == 'array'
           if v['items']['subtype'] == 'ref'
-            stub[k] = Array(v['items']['properties']['ref']['type']).map{|t|
-              ref = JSONModel.parse_jsonmodel_ref(t.is_a?(Hash) ? t['type'] : t)
-              {'ref' => complete_uri(JSONModel.JSONModel(ref.first).schema['uri'], opts)}
-             }
+            stub[k] = [ self.stub(opts.merge(:properties => v['items']['properties'])) ]
           else
             stub[k] = Array(type_of("#{k}/items")).map{|m|
               m.respond_to?(:stub) ? m.stub(opts) : m
