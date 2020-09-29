@@ -61,8 +61,12 @@ class JSONModelType
             stub[k] = complete_uri(type_of(k).schema['uri'], opts)
           else
             if v.has_key?('dynamic_enum')
-              values = Enumeration.filter(:name => v['dynamic_enum']).first.enumeration_value.map {|v| v[:value]}.join('|')
-              stub[k] = '(' + values + ')'
+              values = Enumeration.filter(:name => v['dynamic_enum']).first.enumeration_value.map {|v| v[:value]}
+              if values.length > 1
+                stub[k] = '(' + values.join('|') + ')'
+              else
+                stub[k] = values.first
+              end
             elsif self.record_type == 'date' && (k == 'begin' || k == 'end')
               stub[k] = '(date)'
             else
