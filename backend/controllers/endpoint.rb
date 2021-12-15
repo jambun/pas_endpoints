@@ -52,4 +52,16 @@ class ArchivesSpaceService < Sinatra::Base
     json_response(json)
   end
 
+
+  Endpoint.get('/enumerations')
+    .description("List enumerations without nested enumeration_values")
+    .params()
+    .permissions([])
+    .returns([200, "[(:enumeration)]"]) \
+  do
+    enums = Enumeration.sequel_to_jsonmodel(Enumeration.all)
+    enums.map{|e| eh = e.to_hash; eh.delete('enumeration_values'); eh}
+    json_response(enums)
+  end
+
 end
