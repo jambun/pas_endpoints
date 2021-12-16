@@ -53,7 +53,7 @@ class ArchivesSpaceService < Sinatra::Base
   end
 
 
-  Endpoint.get('/enumerations')
+  Endpoint.get('/pas/enumerations')
     .description("List enumerations without nested enumeration_values")
     .params()
     .permissions([])
@@ -62,6 +62,37 @@ class ArchivesSpaceService < Sinatra::Base
     enums = Enumeration.sequel_to_jsonmodel(Enumeration.all)
     enums.map{|e| eh = e.to_hash; eh.delete('enumeration_values'); eh}
     json_response(enums)
+  end
+
+
+  Endpoint.get('/pas/schemas')
+    .description("Get all ArchivesSpace schemas")
+    .params()
+    .permissions([])
+    .returns([200, "ArchivesSpace (schemas)"]) \
+  do
+    schemas = Hash[ models.keys.map { |schema|
+                      s = JSONModel(schema.to_sym).schema
+                      s[:property_list] = s['properties'].keys
+                      [schema, s] } ]
+    json_response( schemas )
+  end
+
+  Endpoint.get('/pas/schemas/:schema')
+    .description("Get an ArchivesSpace schema")
+    .params(["schema", String, "Schema name to retrieve"])
+    .permissions([])
+    .returns([200, "ArchivesSpace (:schema)"],
+             [404, "Schema not found"]) \
+  do
+    schema = params[:schema]
+    if models.has_key? schema
+      sch = JSONModel(schema.to_sym).schema
+      sch[:property_list] = sch['properties'].keys
+      json_response( sch )
+    else
+      raise NotFoundException.new
+    end
   end
 
 end
