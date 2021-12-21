@@ -60,7 +60,12 @@ class ArchivesSpaceService < Sinatra::Base
     .returns([200, "[(:enumeration)]"]) \
   do
     enums = Enumeration.sequel_to_jsonmodel(Enumeration.all)
-    enums.map{|e| eh = e.to_hash; eh.delete('enumeration_values'); eh}
+    enums.map do |e|
+      eh = e.to_hash
+      eh.delete('enumeration_values')
+      eh['value_translations'] = Hash[eh['values'].map{|v| [v, I18n.t('enumerations.' + eh['name'] + '.' + v, :default => '[no translation]')]}]
+      eh
+    end
     json_response(enums)
   end
 
