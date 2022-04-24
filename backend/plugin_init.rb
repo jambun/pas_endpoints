@@ -80,3 +80,16 @@ class JSONModelType
   end
 
 end
+
+class DB
+  class DBPool
+    unless AppConfig.has_key?(:pas_instance_label) && self.method_defined?(:sysinfo_pre_pas_endpoints)
+      alias_method(:sysinfo_pre_pas_endpoints, :sysinfo)
+      def sysinfo
+        info = sysinfo_pre_pas_endpoints
+        info['label'] = AppConfig[:pas_instance_label]
+        info
+      end
+    end
+  end
+end
