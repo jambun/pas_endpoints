@@ -1,4 +1,6 @@
 Resource.include(LargeTrees)
+DigitalObject.include(LargeTrees)
+Classifications.include(LargeTrees)
 
 class JSONModelType
 
