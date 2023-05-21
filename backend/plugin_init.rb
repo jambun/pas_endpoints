@@ -1,3 +1,5 @@
+Resource.include(LargeTrees)
+
 class JSONModelType
 
   STUB_SKIP_FIELDS = [
