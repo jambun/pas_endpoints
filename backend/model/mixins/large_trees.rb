@@ -7,7 +7,11 @@ module LargeTrees
       jsons = super
 
       jsons.zip(objs).each do |json, obj|
-        json['tree'] = {'ref' => obj.uri + '/tree/root'}
+        if obj.methods.include?(:root_record_id)
+          json['tree'] = {'ref' => obj.uri + '/tree/node'}
+        else
+          json['tree'] = {'ref' => obj.uri + '/tree/root'}
+        end
       end
 
       jsons
