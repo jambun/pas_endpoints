@@ -1,6 +1,7 @@
 {
   "tree" => {
     "type" => "object",
+    "readonly" => "true",
     "subtype" => "ref",
     "properties" => {
       "ref" => {
