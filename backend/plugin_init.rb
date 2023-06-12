@@ -98,3 +98,14 @@ class DB
     end
   end
 end
+
+module JSONSchemaUtils
+  self.singleton_class.send(:alias_method, :parse_schema_messages_pre_pas_endpoints, :parse_schema_messages)
+  def self.parse_schema_messages(messages, validator)
+    msgs = parse_schema_messages_pre_pas_endpoints(messages, validator)
+    if coded = msgs.dig(:errors, 'coded_errors')
+      msgs[:errors]['decoded_errors'] = coded.map{|err| err + ': ' + I18n.t('validation_errors.' + err) }
+    end
+    msgs
+  end
+end
