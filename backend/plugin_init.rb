@@ -9,6 +9,14 @@ class JSONModelType
                       'lock_version',
                      ]
 
+  # non-schema validations are a bane
+  STUB_DEFAULT_EXPANSIONS = {
+    :lang_material => ['language_and_script'],
+    :date => ['begin'],
+    :location => ['barcode'],
+  }
+
+
   def self.type_of(path)
     types = Array((JSONSchemaUtils.schema_path_lookup(self.schema, path) || {})["type"])
     models = types.map do |type|
@@ -31,7 +39,7 @@ class JSONModelType
 
 
   def self.stub(opts = {})
-    expand = opts.fetch(:expand, [])
+    expand = (opts.fetch(:expand, []) + STUB_DEFAULT_EXPANSIONS.fetch(self.record_type.intern, [])).uniq
     stub = {}
     passed_props = opts.delete(:properties)
     props = passed_props || schema['properties']
