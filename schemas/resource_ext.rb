@@ -5,7 +5,8 @@
     "subtype" => "ref",
     "properties" => {
       "ref" => {
-        "type" => "JSONModel(:resource_tree) uri",
+        "type" => "string",
+#        "type" => "JSONModel(:resource_tree) uri",
         "ifmissing" => "error"
       },
       "_resolved" => {
