@@ -1,7 +1,9 @@
 Resource.include(LargeTrees)
 ArchivalObject.include(LargeTrees)
 DigitalObject.include(LargeTrees)
-Classifications.include(LargeTrees)
+DigitalObjectComponent.include(LargeTrees)
+Classification.include(LargeTrees)
+ClassificationTerm.include(LargeTrees)
 
 class JSONModelType
 

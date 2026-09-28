@@ -115,4 +115,20 @@ class ArchivesSpaceService < Sinatra::Base
 
     json_response(large_tree.node(ao))
   end
+
+  Endpoint.get('/repositories/:repo_id/digital_object_components/:id/tree/node')
+    .description("Fetch tree information for the Digital Object Component record within a tree")
+    .params(["id", :id],
+            ["repo_id", :repo_id],
+            ["published_only", BooleanParam, "Whether to restrict to published/unsuppressed items", :default => false])
+    .permissions([:view_repository])
+    .returns([200, TreeDocs::NODE_DOCS]) \
+  do
+    doc = DigitalObjectComponent.get_or_die(params[:id])
+    dobj = DigitalObject.get_or_die(doc.root_record_id)
+    large_tree = LargeTree.new(dobj, {:published_only => params[:published_only]})
+    large_tree.add_decorator(LargeTreeResource.new)
+
+    json_response(large_tree.node(doc))
+  end
 end
